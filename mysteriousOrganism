@@ -1,0 +1,103 @@
+// Returns a random DNA base
+const returnRandBase = () => {
+  const dnaBases = ['A', 'T', 'C', 'G']
+  return dnaBases[Math.floor(Math.random() * 4)] 
+}
+
+// Returns a random single stand of DNA containing 15 bases
+const mockUpStrand = () => {
+  const newStrand = []
+  for (let i = 0; i < 15; i++) {
+    newStrand.push(returnRandBase())
+  }
+  return newStrand
+}
+
+const pAequorFactory = (number, array) => {
+  return {
+    specimenNum: number,
+    dna: array,
+    mutate () {
+      const randIndex = Math.floor(Math.random() * 15);
+      let randBase = ''
+      while(this.dna[randIndex] !== randBase){
+        randBase = returnRandBase();
+        this.dna[randIndex] = randBase;
+      }
+      return this.dna;  
+    },
+    compareDNA (pAequor) {
+      let ex1 = pAequorFactory(this.specimenNum, this.dna);
+      pAequor = pAequorFactory(this.specimenNum + 1, mockUpStrand())
+      console.log(pAequor.dna);
+      let ex2 = pAequor;
+      let count = 0;
+      for (let i = 0; i < 15; i++) {
+        if (ex1.dna[i] === ex2.dna[i]){
+          count += 1
+        }
+      }
+      percent = (count/15 * 100).toFixed(1);
+      console.log(`specimen #${ex1.specimenNum} and specimen #${ex2.specimenNum} have ${percent}% DNA in common.`);
+    },
+    willLikelySurvive () {
+      const pAequor = pAequorFactory(this.specimenNum, this.dna);
+      let count = 0;
+      for (let i = 0; i < 15; i++) {
+        if (pAequor.dna[i] === 'C' || pAequor.dna[i] === 'G') {
+          count += 1;
+        }
+      }
+      if (count >= 9) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    complementStrand () {
+      const pAequor = pAequorFactory(this.specimenNum, this.dna);
+      let compArr = [];
+      for (let i = 0; i < pAequor.dna.length; i++) {
+        switch (pAequor.dna[i]) {
+          case 'A':
+            compArr.push('T');
+            break;
+          case 'T':
+            compArr.push('A');
+            break;
+          case 'C':
+            compArr.push('G');
+            break;
+          case 'G':
+            compArr.push('C');
+            break;
+        }
+      }
+      return compArr;
+    }
+  }
+};
+
+const forStudy = () => {
+  let pAequorArr = [];
+  let index = 0;
+  while (index < 30) {
+    let i = 0;
+    while(true) {
+      let pAequor = pAequorFactory(i += 1, mockUpStrand());
+      if(pAequor.willLikelySurvive() === true) {
+        pAequorArr.push(pAequor.dna);
+        break;
+      }
+    }
+    index += 1;
+  }
+  return pAequorArr;
+}
+
+var currentPAequor = pAequorFactory(1, mockUpStrand());
+console.log(currentPAequor.dna);
+// console.log(currentPAequor.compareDNA());
+// console.log(currentPAequor.willLikelySurvive());
+// console.log(forStudy());
+console.log(currentPAequor.complementStrand());
